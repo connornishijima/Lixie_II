@@ -22,5 +22,5 @@ This decision was made to allow for non-blocking animation code, as the Ticker l
 **Manual Install:**
 
 1. Click "Clone or Download" above to get an "Lixie_II-master.zip" file.
-2. Extract its contents to the libraries folder in your Arduino sketchbook. (Usually "Documents/Arduino/libraries")
+2. Extract its contents to the libraries folder in your Arduino sketchbook. (".../Documents/Arduino/libraries" on Windows)
 3. Rename the folder from "Lixie_II-master" to "Lixie_II".
