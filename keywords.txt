@@ -1,0 +1,46 @@
+###################################
+# Syntax Coloring Map for Edgelit
+###################################
+
+###################################
+# Datatypes (KEYWORD1)
+###################################
+
+Edgelit	KEYWORD1
+
+###################################
+# Methods and Functions (KEYWORD2)
+###################################
+
+begin	KEYWORD2
+write	KEYWORD2
+push_digit	KEYWORD2
+clear	KEYWORD2
+max_power	KEYWORD2
+nixie	KEYWORD2
+vfd_green	KEYWORD2
+vfd_blue	KEYWORD2
+progress	KEYWORD2
+animation_callback	KEYWORD2
+led_count	KEYWORD2
+empty_displays	KEYWORD2
+brightness	KEYWORD2
+transition_type	KEYWORD2
+transition_time	KEYWORD2
+color	KEYWORD2
+color_pixel	KEYWORD2
+color_display	KEYWORD2
+
+###################################
+# Constants (LITERAL1)
+###################################
+
+LIXIE_1	LITERAL1
+NIXIE_PIPE	LITERAL1
+
+FRONT	LITERAL1
+BACK	LITERAL1
+
+INSTANT	LITERAL1
+CROSSFADE	LITERAL1
+FADE_TO_BLACK	LITERAL1
