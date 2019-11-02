@@ -1,0 +1,24 @@
+{
+  "name": "Lixie II",
+  "description": "Library for controlling Lixie II displays!",
+  "keywords": "fastled, lixie, nixie, magic, pwm, edgelit, clock",
+  "authors":
+  {
+    "name": "Connor Nishijima",
+    "email": "connornishijima@gmail.com"
+  },
+  "repository":
+  {
+    "type": "git",
+    "url": "https://github.com/connornishijima/Lixie_II.git"
+  },
+  "version": "1.2.0",
+  "examples": "examples/*.ino",
+  "frameworks": "arduino",
+  "platforms":
+  [
+	"avr",
+    "esp8266",
+	"esp32"
+  ]
+}

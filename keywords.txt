@@ -1,46 +1,53 @@
 ###################################
-# Syntax Coloring Map for Edgelit
+# Syntax Coloring Map for Lixie II
 ###################################
 
 ###################################
 # Datatypes (KEYWORD1)
 ###################################
 
-Edgelit	KEYWORD1
+Lixie_II	KEYWORD1
 
 ###################################
 # Methods and Functions (KEYWORD2)
 ###################################
 
+build_controller	KEYWORD2
 begin	KEYWORD2
-write	KEYWORD2
-push_digit	KEYWORD2
-clear	KEYWORD2
-max_power	KEYWORD2
-nixie	KEYWORD2
-vfd_green	KEYWORD2
-vfd_blue	KEYWORD2
-progress	KEYWORD2
-animation_callback	KEYWORD2
-led_count	KEYWORD2
-empty_displays	KEYWORD2
-brightness	KEYWORD2
 transition_type	KEYWORD2
 transition_time	KEYWORD2
-color	KEYWORD2
-color_pixel	KEYWORD2
-color_display	KEYWORD2
+max_power	KEYWORD2
+color_all	KEYWORD2
+color_all_dual	KEYWORD2
+color_display	KEYWORD2	
+gradient_rgb	KEYWORD2
+start_animation	KEYWORD2
+stop_animation	KEYWORD2
+write	KEYWORD2
+write_float	KEYWORD2
+clear_all	KEYWORD2
+write_digit	KEYWORD2
+push_digit	KEYWORD2
+clear_digit	KEYWORD2
+mask_update	KEYWORD2
+fade_in	KEYWORD2
+fade_out	KEYWORD2
+brightness	KEYWORD2
+run	KEYWORD2
+wait	KEYWORD2
+streak	KEYWORD2
+sweep_color	KEYWORD2
+sweep_gradient	KEYWORD2
+nixie	KEYWORD2
+white_balance	KEYWORD2
+rainbow	KEYWORD2
 
 ###################################
 # Constants (LITERAL1)
 ###################################
 
-LIXIE_1	LITERAL1
-NIXIE_PIPE	LITERAL1
-
-FRONT	LITERAL1
-BACK	LITERAL1
+ON	LITERAL1
+OFF	LITERAL1
 
 INSTANT	LITERAL1
 CROSSFADE	LITERAL1
-FADE_TO_BLACK	LITERAL1
