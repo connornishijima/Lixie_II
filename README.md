@@ -3,7 +3,7 @@
 # Lixie II for Arduino
 
 This library is still maturing, but the functionality from the original Lixie 1/Edgelit libraries is here!
-For now, you can refer to the new [Getting Started Guide](https://github.com/connornishijima/Lixie_II/blob/master/getting_started.md), the "Introduction Tour" example, or [the original library documentation](https://github.com/connornishijima/Lixie-arduino) for its usage is almost identical. (There is now support for all but a few deprecated "Lixie 1" functions. Just change any ocurrance of "Lixie" in your code with "Lixie_II".)
+For now, you can refer to the [Getting Started Guide](https://github.com/connornishijima/Lixie_II/blob/master/getting_started.md), the "Introduction Tour" example, or [the original library documentation](https://github.com/connornishijima/Lixie-arduino) for its usage is almost identical. (There is now support for all but a few deprecated "Lixie 1" functions. Just change any ocurrance of "Lixie" in your code with "Lixie_II".)
 
 # WARNING
 
