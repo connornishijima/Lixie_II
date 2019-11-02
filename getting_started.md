@@ -70,7 +70,7 @@ Lixies are limited to the following Arduino digital pins: (On either AVR/Uno or 
 
 The limits on pins is due to the Arduino compiler being unable to detect which type of ESP8266 breakout you're using, if at all. Between the most common ESP8266 versions - ESP-12, ESP-07, Adafruit Huzzah, NodeMCU, Wemos D1 Mini - these are the pins found on every one and *also* on standard Arduinos. If the library defined a pin not present on your controller, compilation would fail.
 
-In all the example code, the default pin used is Pin 13, whether you're using AVR or ESP8266 microcontrollers.
+In all the example code, the default pin used is Pin 13, whether you're using AVR or ESP8266 microcontrollers. (D7 on Wemos)
 
 Hookup looks like this:
 
