@@ -9,7 +9,7 @@ For now, you can refer to the [Getting Started Guide](https://github.com/connorn
 
 ## UNLIKE THE ORIGINAL LIXIE LIBRARY, THIS ONE *REALLY* PREFERS THE ESPRESSIF/XTENSA ARCHITECTURE. (ESP8266 / ESP32)
 
-This design choice was made to allow for non-blocking animation code, as the Ticker library or ESP32's second core are great for this. The vast majority of Lixie 1 users were using Espressif controllers anyways for a cheap gateway for the Lixies to fetch internet time, stocks, analytics, etc. This means that any Arduino Unos, Micros, Pro Minis, Megas - those old controllers are still supported, but the animation system may bog things down slightly. If you haven't tried them yet, the Espressif microcontrollers are amazing and unless you're going for low-power, (Lixies are not) AVR isn't quite right for something like Lixie II.
+This design choice was made to allow for non-blocking animation code, as the Ticker library or ESP32's second core are great for this. The vast majority of Lixie 1 users were using Espressif controllers anyways for a cheap gateway for the Lixies to fetch internet time, stocks, analytics, etc. This means that any older controllers like Arduino Unos, Micros, Pro Minis and Megas are still supported, but the animation system may bog things down slightly. If you haven't tried them yet, the Espressif microcontrollers are amazing and unless you're going for low-power, (Lixies are not) AVR isn't quite right for something like Lixie II.
 
 ----------
 # Installation
