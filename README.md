@@ -14,7 +14,9 @@ This design choice was made to allow for non-blocking animation code, as the Tic
 ----------
 # Installation
 
-***The Lixie II library relies on [the FastLED library from Daniel Garcia](https://github.com/FastLED/FastLED), so make sure you have that installed as well!***
+***The Lixie II library relies on [the FastLED library from Daniel Garcia](https://github.com/FastLED/FastLED), so make sure you have that installed as well!*** You can get it via the Arduino Library Manager in your Arduino window by clicking "Sketch > Include Library > Manage Libraries" and searching for "FastLED" in the smaller window that appears. (Just click "Install" for the latest version)
+
+### Installing the Lixie II Library
 
 ~**With Arduino Library Manager:**~ COMING SOON!
 
