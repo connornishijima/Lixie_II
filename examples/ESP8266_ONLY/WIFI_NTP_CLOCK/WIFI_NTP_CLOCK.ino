@@ -20,7 +20,7 @@
  * It requires two external buttons to fully function: (defined as HUE_BUTTON and HOUR_BUTTON below)
  * one for changing color/modes, and one for setting the UTC offset (timezone)
  * 
- * Upon booting, it will failt to connect to WiFi as it doesn't yet know your
+ * Upon booting, it will fail to connect to WiFi as it doesn't yet know your
  * credentials. It will then host it's own WiFi access point named "LIXIE CONFIG"
  * that you can connect your phone to.
  * 
@@ -49,7 +49,7 @@
 
 #define SIX_DIGIT_CLOCK false   // 6 or 4-digit clock? (6 has seconds shown)
 
-#define HOUR_BUTTON       D1      // These are pulled up internally, and should be
+#define HOUR_BUTTON     D1      // These are pulled up internally, and should be
 #define HUE_BUTTON      D3      // tied to GND through momentary switches
 ///////////////////////////////////////////////////////////////////////////////////
 
@@ -57,9 +57,16 @@ Lixie_II lix(DATA_PIN, NUM_DIGITS);
 WiFiUDP ntp_UDP;
 NTPClient time_client(ntp_UDP, "pool.ntp.org", 3600, 60000);
 #define SECONDS_PER_HOUR 3600
-int16_t time_zone_shift = 0;
-uint8_t hour_12_mode = false;
 bool time_found = false;
+
+struct conf {
+  int16_t time_zone_shift = 0;
+  uint8_t hour_12_mode = false;
+  uint8_t base_hue = 0;
+  uint8_t current_mode = 0;
+  
+};
+conf clock_config; // <- global configuration object
 
 uint32_t settings_last_update = 0;
 bool settings_changed = false;
@@ -85,11 +92,8 @@ bool hour_mode_started = false;
 uint32_t hue_button_start = 0;
 uint8_t button_debounce_ms = 100;
 
-uint8_t base_hue = 0;
 uint16_t hue_countdown = 255;
 uint16_t hue_push_wait = 500;
-
-uint8_t current_mode = 0;
 
 #define NUM_MODES 7
 
@@ -139,52 +143,65 @@ void run_clock() {
 }
 
 void save_settings() {
-  StaticJsonBuffer<200> jsonBuffer;
-  JsonObject& root = jsonBuffer.createObject();
+// Delete existing file, otherwise the configuration is appended to the file
+  SPIFFS.remove(settings_file);
 
-  root["base_hue"] = base_hue;
-  root["mode"] = current_mode;
-  root["offset"] = time_zone_shift;
-  root["hour_mode"] = hour_12_mode;
-  
-  String settings;
-  root.printTo(settings);
-  Serial.println(settings);
-
-  File f = SPIFFS.open(settings_file, "w+");
-
-  if (!f) {
-    Serial.println("settings file open failed");
+  // Open file for writing
+  File file = SPIFFS.open(settings_file, "w+");
+  if (!file) {
+    Serial.println(F("Failed to create config file"));
+    return;
   }
-  else {
-    //Write data to file
-    f.print(settings);
-    f.close();  //Close file
+  else{
+    Serial.println("Config file opened");
   }
+
+  // Allocate a temporary JsonDocument
+  StaticJsonDocument<512> doc_out;
+
+  // Set the values in the document
+  doc_out["base_hue"] = clock_config.base_hue;
+  doc_out["current_mode"] = clock_config.current_mode;
+  doc_out["time_zone_shift"] = clock_config.time_zone_shift;
+  doc_out["hour_12_mode"] = clock_config.hour_12_mode;
+
+  // Serialize JSON to file
+  if (serializeJson(doc_out, file) == 0) {
+    Serial.println(F("Failed to write to config file"));
+  }
+  else{
+    Serial.println("Config Saved!");
+  }
+
+  // Close the file
+  file.close();
 }
 
 void load_settings() {
-  String input = "";
+  // Open file for reading
+  File file = SPIFFS.open(settings_file, "r");
 
-  //Read File data
-  File f = SPIFFS.open(settings_file, "r");
-  if (!f) {
-    Serial.println("settings file open failed");
+  // Allocate a temporary JsonDocument
+  StaticJsonDocument<512> doc_in;
+
+  // Deserialize the JSON document
+  DeserializationError error = deserializeJson(doc_in, file);
+  if (error){
+    Serial.println(F("Failed to read file, using default configuration"));
   }
-  else {
-    for (uint16_t i = 0; i < f.size(); i++) {
-      input += (char)f.read();
-    }
-    f.close();  //Close file
+  else{
+    Serial.println("Config file opened");
+    Serial.println("Config Loaded!");
   }
 
-  StaticJsonBuffer<200> jsonBuffer;
-  JsonObject& root = jsonBuffer.parseObject(input);
+  // Copy values from the JsonDocument to the Config
+  clock_config.base_hue = doc_in["base_hue"];
+  clock_config.current_mode = doc_in["current_mode"];
+  clock_config.time_zone_shift = doc_in["time_zone_shift"];
+  clock_config.hour_12_mode = doc_in["hour_12_mode"];
 
-  base_hue = root["base_hue"];
-  current_mode = root["mode"];
-  time_zone_shift = root["offset"];
-  hour_12_mode = root["hour_mode"];
+  // Close the file (Curiously, File's destructor doesn't close the file)
+  file.close();
 }
 
 void show_time() {
@@ -192,7 +209,7 @@ void show_time() {
   uint8_t mm = time_client.getMinutes();
   uint8_t ss = time_client.getSeconds();
 
-  if (hour_12_mode == true) {
+  if (clock_config.hour_12_mode == true) {
     if (hh > 12) {
       hh -= 12;
     }
@@ -222,21 +239,21 @@ void show_time() {
 }
 
 void color_for_mode() {
-  uint8_t temp_hue = base_hue + hue_countdown;
+  uint8_t temp_hue = clock_config.base_hue + hue_countdown;
 
-  if (current_mode == MODE_SOLID) {
+  if (clock_config.current_mode == MODE_SOLID) {
     lix.color_all(ON, CHSV(temp_hue, 255, 255));
     lix.color_all(OFF, CRGB(0, 0, 0));
   }
-  else if (current_mode == MODE_GRADIENT) {
+  else if (clock_config.current_mode == MODE_GRADIENT) {
     lix.gradient_rgb(ON, CHSV(temp_hue, 255, 255), CHSV(temp_hue + 90, 255, 255));
     lix.color_all(OFF, CRGB(0, 0, 0));
   }
-  else if (current_mode == MODE_DUAL) {
+  else if (clock_config.current_mode == MODE_DUAL) {
     lix.color_all_dual(ON, CHSV(temp_hue, 255, 255), CHSV(temp_hue + 90, 255, 255));
     lix.color_all(OFF, CRGB(0, 0, 0));
   }
-  else if (current_mode == MODE_NIXIE) {
+  else if (clock_config.current_mode == MODE_NIXIE) {
     lix.color_all(ON, CRGB(255, 70, 7));
     CRGB col_off = CRGB(0, 100, 255);
     const uint8_t nixie_aura_level = 8;
@@ -247,15 +264,15 @@ void color_for_mode() {
 
     lix.color_all(OFF, col_off);
   }
-  else if (current_mode == MODE_INCANDESCENT) {
+  else if (clock_config.current_mode == MODE_INCANDESCENT) {
     lix.color_all(ON, CRGB(255, 100, 25));
     lix.color_all(OFF, CRGB(0, 0, 0));
   }
-  else if (current_mode == MODE_VFD) {
+  else if (clock_config.current_mode == MODE_VFD) {
     lix.color_all(ON, CRGB(100, 255, 100));
     lix.color_all(OFF, CRGB(0, 0, 0));
   }
-  else if (current_mode == MODE_WHITE) {
+  else if (clock_config.current_mode == MODE_WHITE) {
     lix.color_all(ON, CRGB(255, 255, 255));
   }
 }
@@ -304,13 +321,13 @@ void parse_buttons() {
     uint16_t hour_button_duration = t_now - hour_button_start;
     if (hour_button_duration < hour_button_wait) { // RELEASED QUICKLY
       Serial.println("UP");
-      time_zone_shift += 1;
+      clock_config.time_zone_shift += 1;
 
-      if(time_zone_shift >= 12){
-        time_zone_shift = -12;
+      if(clock_config.time_zone_shift >= 12){
+        clock_config.time_zone_shift = -12;
       }
       
-      time_client.setTimeOffset(time_zone_shift * SECONDS_PER_HOUR);
+      time_client.setTimeOffset(clock_config.time_zone_shift * SECONDS_PER_HOUR);
       show_time();
       update_settings();
     }
@@ -327,9 +344,9 @@ void parse_buttons() {
     uint16_t hue_button_duration = t_now - hue_button_start;
     if (hue_button_duration < hue_push_wait) { // RELEASED QUICKLY
       Serial.println("NEXT MODE");
-      current_mode++;
-      if (current_mode >= NUM_MODES) {
-        current_mode = 0;
+      clock_config.current_mode++;
+      if (clock_config.current_mode >= NUM_MODES) {
+        clock_config.current_mode = 0;
       }
       hue_countdown = 127;
       update_settings();
@@ -339,9 +356,9 @@ void parse_buttons() {
   if (hue_button_state == LOW) { // CURRENTLY PRESSING
     uint16_t hue_button_duration = t_now - hue_button_start;
     if (hue_button_duration >= hue_push_wait) {
-      base_hue++;
+      clock_config.base_hue++;
       Serial.print("HUE: ");
-      Serial.println(base_hue);
+      Serial.println(clock_config.base_hue);
       update_settings();
     }
   }
@@ -351,7 +368,7 @@ void parse_buttons() {
     if (hour_button_duration >= hour_button_wait && hour_mode_started == false) {
       hour_mode_started = true;
       Serial.println("CHANGE HOUR MODE");
-      hour_12_mode = !hour_12_mode;
+      clock_config.hour_12_mode = !clock_config.hour_12_mode;
       update_settings();
     }
   }
@@ -385,7 +402,7 @@ void init_wifi() {
 
 void init_ntp() {
   time_client.begin();
-  time_client.setTimeOffset(time_zone_shift * SECONDS_PER_HOUR);
+  time_client.setTimeOffset(clock_config.time_zone_shift * SECONDS_PER_HOUR);
 }
 
 void init_fs() {
