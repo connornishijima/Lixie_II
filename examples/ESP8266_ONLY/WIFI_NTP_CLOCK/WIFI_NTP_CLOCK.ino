@@ -55,7 +55,7 @@
 
 Lixie_II lix(DATA_PIN, NUM_DIGITS);
 WiFiUDP ntp_UDP;
-NTPClient time_client(ntp_UDP, "pool.ntp.org", 3600, 60000);
+NTPClient time_client(ntp_UDP, "pool.ntp.org", 3600, 900000); // Updates NTP sync every 15 minutes
 #define SECONDS_PER_HOUR 3600
 bool time_found = false;
 
