@@ -12,7 +12,7 @@
     "type": "git",
     "url": "https://github.com/connornishijima/Lixie_II.git"
   },
-  "version": "1.2.0",
+  "version": "1.3.0",
   "examples": "examples/*.ino",
   "frameworks": "arduino",
   "platforms":
