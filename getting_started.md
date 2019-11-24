@@ -18,9 +18,21 @@ The Lixie II display is a bit more cost effective than competitors like the Nixi
 
 Any AVR/Arduino or ESP8266/derivative microcontroller can be used to control Lixie displays. There is a Lixie II library available for the Arduino IDE:
 
-- Visit https://github.com/connornishijima/Lixie_II/
-- "Clone or Download"  >  "Download ZIP"
-- Extract the .zip to (Sketchbook folder)/libraries/Lixie_II
+### Installing the Lixie II Library
+
+***The Lixie II library relies on [the FastLED library from Daniel Garcia](https://github.com/FastLED/FastLED), so make sure you have that installed as well!*** You can get it via the Arduino Library Manager in your Arduino window by clicking "Sketch > Include Library > Manage Libraries" and searching for "FastLED" in the smaller window that appears. (Just click "Install" for the latest version)
+
+**With Arduino Library Manager: (RECOMMENDED)**
+
+1. Open *Sketch > Include Library > Manage Libraries* in the Arduino IDE.
+2. Search for "Lixie_II", and select the latest version.
+3. Click the Install button and Arduino will prepare the library and examples for you!
+
+**Manual Install:**
+
+1. Click "Clone or Download" above to get an "Lixie_II-master.zip" file.
+2. Extract its contents to the libraries folder in your Arduino sketchbook. ("C:/Users/**YOUR_USERNAME**/Documents/Arduino/libraries" on Windows)
+3. Rename the folder from "Lixie_II-master" to "Lixie_II".
 
 When finished, an example folder structure for Windows should be:
 
@@ -30,7 +42,7 @@ When finished, an example folder structure for Windows should be:
 
 Before using Lixies, I highly suggest reading through [Adafruit's "NeoPixel Uberguide"](https://learn.adafruit.com/adafruit-neopixel-uberguide/overview). It goes over many details of how the WS2812/B/S smart-RGB LED works. It's one of the most well-written guides out there. There are 22 of these LEDs in each Lixie digit, so you have to consider the following for your power requirements:
 
-### Lixies are powered and best controlled with 5V.
+### Lixies are powered (and best controlled) with 5 Volts.
 
 The 22 WS2812B LEDs onboard are nominally powered with 5 volts DC, and expect at least 3.5V (Power voltage\*0.7) on the DIN line to control the pixels. If you have a 3V3-logic microcontroller, you may or may not have to use [a level shifter](https://www.adafruit.com/product/1787). However, I have successfully run Lixies off of a 3.3V Wemos D1 Mini (ESP8266 controller) without needing a level shifter - even with the LEDs powered by the 5 volt line.
 
@@ -48,7 +60,7 @@ The Lixie library has a few functions like **lix.sweep()** that offer some fanci
 
 #### Full Brightness
 
-If you want to allow for any possible lighting scenario, you'll need to have a power supply that can support all 20 LEDs in each digit at full white. That is 60mA per LED, multiplied by 20 LEDs, multiplied by the number of digits in your display. For a 6-digit clock flashing every single LED at full-white, you would need a power supply capable of 60mA\*20\*6 = 7,200mA or **7.2A**. You'll probably want the microcontroller powered by the same supply, so add an extra ampere for headroom: **8.2A**.
+If you want to allow for any possible lighting scenario, you'll need to have a power supply that can support all 22 LEDs in each digit at full white. That is 60mA per LED, multiplied by 22 LEDs, multiplied by the number of digits in your display. For a 6-digit display flashing every single LED at full-white, you would need a power supply capable of 60mA\*22\*6 = 7,920mA or **7.9A**. You'll probably want the microcontroller powered by the same supply, so add an extra ampere for headroom: **8.9A**. However, most people won't be using Lixie II clocks as a lightbar for their off-road truck, so 1 or 2A supplies should be just fine for most cases. ;) (Plenty of USB phone charging blocks can supply this.)
 
 #### Software Regulation
 
