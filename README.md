@@ -18,11 +18,11 @@ This design choice was made to allow for non-blocking animation code, as the Tic
 
 ### Installing the Lixie II Library
 
-~**With Arduino Library Manager:**~ COMING SOON!
+**With Arduino Library Manager:**
 
-~1. Open *Sketch > Include Library > Manage Libraries* in the Arduino IDE.~
-~2. Search for "Lixie_II", and select the latest version.~
-~3. Click the Install button and Arduino will prepare the library and examples for you!~
+1. Open *Sketch > Include Library > Manage Libraries* in the Arduino IDE.
+2. Search for "Lixie_II", and select the latest version.
+3. Click the Install button and Arduino will prepare the library and examples for you!
 
 **Manual Install:**
 
