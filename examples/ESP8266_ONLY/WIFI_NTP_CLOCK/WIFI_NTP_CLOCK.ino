@@ -14,13 +14,16 @@
    Lixie II NTP Clock for ESP8266
    by Connor Nishijima (November 2nd, 2019)
 
-   This example relies on an ESP8266/ESP32 controller,
-   which is used to pull UTC time from an NTP server over WiFi.
+   This example relies on an ESP8266/ESP32 controller, which is used to pull
+   UTC time from an NTP server over WiFi. There are also a few external libraries
+   required for NTP timekeeping, which are provided as GitHub links at the top of
+   this sketch and can also be installed by name using the Arduino Library Manager.
    
    REQUIRED HARDWARE ---------------------------------------------------------------------
 
-   It requires two external buttons to fully function: (defined as HUE_BUTTON and HOUR_BUTTON below)
-   one for changing color/modes, and one for setting the UTC offset (timezone)
+   It requires two external buttons to fully function: (defined as HUE_BUTTON and
+   HOUR_BUTTON below) one for changing color/modes, and one for setting the UTC
+   offset (timezone)
 
    INSTRUCTIONS --------------------------------------------------------------------------
 
