@@ -471,6 +471,11 @@ void Lixie_II::brightness(float level){
   bright = level; // We instead enforce brightness in the animation ISR
 }
 
+void Lixie_II::brightness(double level){
+  //FastLED.setBrightness(255*level); // NOT SUPPORTED WITH CLEDCONTROLLER :(
+  bright = level; // We instead enforce brightness in the animation ISR
+}
+
 void Lixie_II::fade_in(){
   for(int16_t i = 0; i < 255; i++){
     brightness(i/255.0);
