@@ -54,7 +54,7 @@ class Lixie_II
 		void mask_update();
 		void fade_in();
 		void fade_out();
-		void brightness(uint8_t level);
+		void brightness(float level);
 		void run();
 		void wait();
 		void streak(CRGB col, float pos, uint8_t blur);
