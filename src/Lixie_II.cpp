@@ -613,6 +613,10 @@ void Lixie_II::show(){
 
 
 
+void Lixie_II::brightness(uint8_t b){
+  brightness( b/255.0 ); // Forward to newer float function
+}
+
 void Lixie_II::write_flip(uint32_t input, uint16_t flip_time, uint8_t flip_speed){
   // This animation no longer supported, crossfade is used instead
   transition_type(CROSSFADE);
