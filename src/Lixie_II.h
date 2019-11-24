@@ -68,6 +68,7 @@ class Lixie_II
 		// Deprecated Lixie 1 functions and overloads:
 		// ----------------------------------------------
 		
+		void brightness(uint8_t b);
 		void clear(bool show_change = true);
 		void clear_digit(uint8_t index, bool show_change = true);
 		void show();
