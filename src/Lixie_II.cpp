@@ -29,6 +29,9 @@ CRGB *col_off;
 uint8_t *led_mask_0;
 uint8_t *led_mask_1;
 
+bool *special_panes_enabled;
+CRGB *special_panes_color;
+
 uint8_t current_mask = 0;
 float mask_fader = 0.0;
 float mask_push = 1.0;
@@ -74,6 +77,8 @@ void animate(){
     transition_mid_point = true;
   }
   
+  uint8_t pcb_index = 0;
+  
   for(uint16_t i = 0; i < n_LEDs; i++){
     float mask_float;
     CRGB new_col;
@@ -94,10 +99,22 @@ void animate(){
     new_col.b = ((col_on[i].b*mask_float) + (col_off[i].b*(1-mask_float)))*bright;
     
     lix_leds[i] = new_col;  
-    
-    //Serial.print(led_to_x_pos(i));
-    //Serial.print('\t');
-    //Serial.println(max_x_pos);
+	
+	// Check for special pane enabled for the current digit, and use its color instead if it is.
+	uint8_t digit_index = i/leds_per_digit;
+	if(special_panes_enabled[digit_index]){
+		if(pcb_index == 4){
+			lix_leds[i] = special_panes_color[digit_index*2];
+		}
+		else if(pcb_index == 17){
+			lix_leds[i] = special_panes_color[digit_index*2+1];
+		}
+	}
+	
+    pcb_index++;
+	if(pcb_index >= leds_per_digit){
+		pcb_index = 0;
+	}
   }
       
   lix_controller->showLeds(); 
@@ -162,6 +179,9 @@ Lixie_II::Lixie_II(const uint8_t pin, uint8_t number_of_digits){
   lix_leds = new CRGB[n_LEDs];  
   led_mask_0 = new uint8_t[n_LEDs];
   led_mask_1 = new uint8_t[n_LEDs];
+  
+  special_panes_enabled = new bool[n_digits];
+  special_panes_color = new CRGB[n_digits*2];
     
   col_on = new CRGB[n_LEDs];
   col_off = new CRGB[n_LEDs];
@@ -172,6 +192,10 @@ Lixie_II::Lixie_II(const uint8_t pin, uint8_t number_of_digits){
     
     col_on[i] = CRGB(255,255,255);
     col_off[i] = CRGB(0,0,0);
+  }
+  
+  for(uint16_t i = 0; i < n_digits*2; i++){
+	special_panes_color[i] = CRGB(255,255,255);
   }
   
   build_controller(pin);
@@ -245,23 +269,37 @@ void Lixie_II::write(uint32_t input){
 }
 
 bool char_is_number(char input){
-  if(input <= 57 && input >= 48) // if between ASCII '9' and '0'
+  if(input <= 57 && input >= 48) // if equal to or between ASCII '0' and '9'
     return true;
   else
     return false;
 }
 
-void Lixie_II::write(char* input){
-  char temp[20] = "";
-  byte index = 0;
-  for(uint8_t i = 0; i < 20; i++){
-    if(char_is_number(input[i])){
-      temp[index] = input[i];
-      index++;
+void Lixie_II::write(String input){
+  uint8_t message_len = input.length();
+  clear_all();
+
+  for(uint8_t i = 0; i < message_len; i++){
+	char c = input.charAt(i);
+    if(char_is_number(c)){
+      push_digit(c - '0'); // numeric char to int - normal behavior
     }
+	else if(c == ' '){ // If space then blank digit
+		push_digit(128);
+	}
+	else{ // must be special pane
+	  push_digit(255);
+	}
   }
-  uint32_t output = atol(temp);
-  write(output);
+
+  if(current_mask == 0){
+    current_mask = 1;
+  }
+  else if(current_mask == 1){
+    current_mask = 0;
+  }
+  
+  mask_update();
 }
 
 void Lixie_II::write_float(float input_raw, uint8_t dec_places){
@@ -306,6 +344,8 @@ void Lixie_II::write_float(float input_raw, uint8_t dec_places){
 }
 
 void Lixie_II::push_digit(uint8_t number) {
+  // 0-9 are rendered normally when passed in, but 128 = blank display & 255 = special pane
+	
   // If multiple displays, move all LED states forward one
   if (n_digits > 1) {
     for (uint16_t i = n_LEDs - 1; i >= leds_per_digit; i--) {
@@ -328,24 +368,36 @@ void Lixie_II::push_digit(uint8_t number) {
     }
   }
   
-  for(uint8_t i = 0; i < leds_per_digit; i++){
-    if(led_assignments[i] == number){
-      if(current_mask == 0){
-        led_mask_0[i] = 255;
-      }
-      else{
-        led_mask_1[i] = 255;
-      }
-    }
-    else{
-      if(current_mask == 0){
-        led_mask_0[i] = 0;
-      }
-      else{
-        led_mask_1[i] = 0;
-      }
-    }
-  } 
+  if(number != 128){
+	  for(uint8_t i = 0; i < leds_per_digit; i++){
+		if(led_assignments[i] == number){
+		  if(current_mask == 0){
+			led_mask_0[i] = 255;
+		  }
+		  else{
+			led_mask_1[i] = 255;
+		  }
+		}
+		else{
+		  if(current_mask == 0){
+			led_mask_0[i] = 0;
+		  }
+		  else{
+			led_mask_1[i] = 0;
+		  }
+		}
+	  }
+  }
+  else{
+	  for(uint8_t i = 0; i < leds_per_digit; i++){
+		  if(current_mask == 0){
+			led_mask_0[i] = 0;
+		  }
+		  else{
+			led_mask_1[i] = 0;
+		  }
+	  }
+  }
 }
 
 void Lixie_II::write_digit(uint8_t digit, uint8_t num){
@@ -381,6 +433,25 @@ void Lixie_II::clear_digit(uint8_t digit, uint8_t num){
   }
   
   mask_update();
+}
+
+void Lixie_II::special_pane(uint8_t index, bool enabled, CRGB col1, CRGB col2){
+	special_panes_enabled[index] = enabled;
+	if(enabled){
+		if(col2.r != 0 || col2.g != 0 || col2.b != 0){ // use second color if defined
+			Serial.println("\n\n\nSPECIAL COL 2");
+			special_panes_color[(index*2)+1] = col1;
+			special_panes_color[index*2]     = col2;
+		}
+		else{ // if not, just use col1 for both special pane LEDs instead
+			special_panes_color[(index*2)+1] = col1;
+			special_panes_color[index*2]     = col1;
+		}
+	}
+	else{
+		special_panes_color[index*2+1] = CRGB(0,0,0);
+		special_panes_color[index*2]   = CRGB(0,0,0);
+	}
 }
 
 void Lixie_II::mask_update(){
