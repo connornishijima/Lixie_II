@@ -45,12 +45,13 @@ class Lixie_II
 		void start_animation();
 		void stop_animation();
 		void write(uint32_t input);
-		void write(char* input);
+		void write(String input);
 		void write_float(float input, uint8_t dec_places = 1);
 		void clear_all();
 		void write_digit(uint8_t digit, uint8_t num);
 		void push_digit(uint8_t number);
 		void clear_digit(uint8_t digit, uint8_t num);
+		void special_pane(uint8_t index, bool enabled, CRGB col1 = CRGB(0,0,0), CRGB col2 = CRGB(0,0,0));
 		void mask_update();
 		void fade_in();
 		void fade_out();
